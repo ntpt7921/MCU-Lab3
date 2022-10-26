@@ -57,6 +57,24 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define COUNT0_Pin GPIO_PIN_0
+#define COUNT0_GPIO_Port GPIOA
+#define COUNT1_Pin GPIO_PIN_1
+#define COUNT1_GPIO_Port GPIOA
+#define COUNT2_Pin GPIO_PIN_2
+#define COUNT2_GPIO_Port GPIOA
+#define CONNT3_Pin GPIO_PIN_3
+#define CONNT3_GPIO_Port GPIOA
+#define COUNT4_Pin GPIO_PIN_4
+#define COUNT4_GPIO_Port GPIOA
+#define COUNT5_Pin GPIO_PIN_5
+#define COUNT5_GPIO_Port GPIOA
+#define COUNT6_Pin GPIO_PIN_6
+#define COUNT6_GPIO_Port GPIOA
+#define COUNT7_Pin GPIO_PIN_7
+#define COUNT7_GPIO_Port GPIOA
+#define BUTTON_Pin GPIO_PIN_0
+#define BUTTON_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

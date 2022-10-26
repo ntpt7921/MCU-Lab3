@@ -10,37 +10,22 @@
 
 #include "main.h"
 
-#define TIMER_TICK_DURATION_MS 10
-extern int TIMER_CYCLE;
+typedef enum
+{
+    TIMER_FLAG_RESET = RESET,
+    TIMER_FLAG_SET = SET,
+} Timer_flag_state_t;
 
-extern int timer0_counter;
-extern int timer0_flag;
+extern const int TIMER_TICK_DURATION_MS;
 
-extern int timer1_counter;
-extern int timer1_flag;
+typedef struct
+{
+    uint32_t timer_counter;
+    Timer_flag_state_t timer_flag;
+} Software_timer_t;
 
-extern int timer2_counter;
-extern int timer2_flag;
-
-extern int timer3_counter;
-extern int timer3_flag;
-
-extern int timer4_counter;
-extern int timer4_flag;
-
-void setTimer0(int duration);
-void timer0_run();
-
-void setTimer1(int duration);
-void timer1_run();
-
-void setTimer2(int duration);
-void timer2_run();
-
-void setTimer3(int duration);
-void timer3_run();
-
-void setTimer4(int duration);
-void timer4_run();
+void software_timer_set_duration(Software_timer_t *tm, uint32_t ms);
+void software_timer_update_after_tick(Software_timer_t *tm);
+uint8_t software_timer_is_set(Software_timer_t *tm);
 
 #endif /* INC_SOFTWARE_TIMER_H_ */
