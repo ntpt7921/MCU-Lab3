@@ -1,0 +1,5 @@
+# The Debug directory contains compiled object file and its intermediate
+Debug/
+
+# The Debug.launch file is associated with debugging and thus not included
+*Debug.launch
