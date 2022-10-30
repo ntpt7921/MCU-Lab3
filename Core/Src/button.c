@@ -16,13 +16,17 @@ void button_poll_and_update_state(Button_t *bt)
     {
         bt->filter_delay_count++;
 
-        if (bt->filter_delay_count == bt->FILTER_DELAY_COUNT_MAX)
+        if (bt->filter_delay_count >= bt->FILTER_DELAY_COUNT_MAX)
         {
             if (current_reading == bt->READING_WHEN_PRESSED)
             {
-                // only update state to pressed if not already in hold state
-                if (bt->current_state != BUTTON_IS_HOLD)
+                // only update state to pressed if previous state was released
+            	// and set the flag
+                if (bt->current_state == BUTTON_IS_RELEASED)
+                {
+                    bt->activate_flag = 1;
                     bt->current_state = BUTTON_IS_PRESSED;
+                }
             }
             else
             {
@@ -37,15 +41,37 @@ void button_poll_and_update_state(Button_t *bt)
     }
 
     // within pressed state, after a delay has passed, change to hold state
+    // also activate the flag
     if (bt->current_state == BUTTON_IS_PRESSED)
     {
         bt->hold_state_delay_count++;
 
-        if (bt->hold_state_delay_count == bt->HOLD_STATE_DELAY_COUNT_MAX)
+        if (bt->hold_state_delay_count >= bt->HOLD_STATE_DELAY_COUNT_MAX)
         {
             bt->current_state = BUTTON_IS_HOLD;
+            bt->activate_flag = 2;
             bt->hold_state_delay_count = 0;
         }
+    }
+    else
+    {
+    	bt->hold_state_delay_count = 0;
+    }
+
+    // within hold state, after a delay has passed, reactivate the flag
+    if (bt->current_state == BUTTON_IS_HOLD)
+    {
+    	bt->hold_state_activate_count++;
+
+    	if (bt->hold_state_activate_count >= bt->HOLD_STATE_ACTIVATE_COUNT_MAX)
+    	{
+    		bt->activate_flag = 2;
+    		bt->hold_state_activate_count = 0;
+    	}
+    }
+    else
+    {
+    	bt->hold_state_activate_count = 0;
     }
 
     bt->last_reading = current_reading;
@@ -59,4 +85,19 @@ uint8_t button_is_pressed(Button_t *bt)
 uint8_t button_is_hold(Button_t *bt)
 {
     return (bt->current_state == BUTTON_IS_HOLD);
+}
+
+uint8_t button_is_pressed_activated(Button_t *bt)
+{
+	return (bt->activate_flag == 1);
+}
+
+uint8_t button_is_hold_activated(Button_t *bt)
+{
+	return (bt->activate_flag == 2);
+
+}
+void button_clear_activation(Button_t *bt)
+{
+	bt->activate_flag = 0;
 }

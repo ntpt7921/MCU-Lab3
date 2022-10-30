@@ -24,7 +24,7 @@ typedef struct
     Timer_flag_state_t timer_flag;
 } Software_timer_t;
 
-void software_timer_set_duration(Software_timer_t *tm, uint32_t ms);
+void software_timer_set_duration_ms(Software_timer_t *tm, uint32_t ms);
 void software_timer_update_after_tick(Software_timer_t *tm);
 uint8_t software_timer_is_set(Software_timer_t *tm);
 
