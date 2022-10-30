@@ -5,7 +5,7 @@
  *      Author: ntpt
  */
 
-#include "led_7seg.h"
+#include "User/led_7seg.h"
 
 const uint16_t SEG7_PATTERN_0 = SEG0_Pin | SEG1_Pin | SEG2_Pin | SEG3_Pin | SEG4_Pin | SEG5_Pin;
 const uint16_t SEG7_PATTERN_1 = SEG1_Pin | SEG2_Pin;
@@ -27,25 +27,40 @@ const uint16_t SEG7_PATTERN_LIST[] = {
 };
 
 
-void two_digit_7seg_update_digit_value(Two_digit_7seg *display, uint8_t digit, uint8_t value)
+void two_digit_7seg_update_digit_value(Two_digit_7seg_t *display, uint8_t digit, uint8_t value)
 {
     display->digit_value[digit] = value;
 }
 
-void two_digit_7seg_display_digit(Two_digit_7seg *display, uint8_t digit)
+void two_digit_7seg_update_value(Two_digit_7seg_t *display, uint8_t value)
+{
+	// assume that value inputed is from 00 -> 99
+	if (value > 99)
+	{
+		return;
+	}
+
+	two_digit_7seg_update_digit_value(display, 0, value % 10);
+	two_digit_7seg_update_digit_value(display, 1, value / 10);
+}
+
+void two_digit_7seg_display_digit(Two_digit_7seg_t *display, uint8_t digit)
 {
     // we assume digit can only be 0 or 1
-    uint8_t other_7seg_control_pin = display->CONTROL_PIN[!digit];
+	uint8_t other_digit = (digit == 0) ? 1 : 0;
+	uint16_t other_7seg_control_pin = display->CONTROL_PIN[other_digit];
+    GPIO_TypeDef *other_7seg_control_port = display->CONTROL_PORT[other_digit];
 
-    HAL_GPIO_WritePin(display->CONTROL_PORT, display->CONTROL_PIN[digit], SET);
-    HAL_GPIO_WritePin(display->CONTROL_PORT, other_7seg_control_pin, SET);
+    // disable the other digit control line
+    HAL_GPIO_WritePin(other_7seg_control_port, other_7seg_control_pin, SET);
+
+    // set new pattern and enable digit control line
+    led_7seg_change_pattern(display->digit_value[digit]);
+    HAL_GPIO_WritePin(display->CONTROL_PORT[digit], display->CONTROL_PIN[digit], RESET);
 }
 
 void led_7seg_change_pattern(uint8_t num)
 {
-    uint16_t set_pattern = SEG7_PATTERN_LIST[num];
-    uint16_t reset_patern = ~set_pattern;
-    uint32_t set_reset_pattern = ((uint32_t) reset_patern << 16) | ((uint32_t) set_pattern);
-
-    COMMON_SEG7_PATTERN_PORT->BSRR = set_reset_pattern;
+	// SEG7_PATTERN_8 will be used as a mask since it have all pin or'ed together
+	gpio_parallel_write(COMMON_SEG7_PATTERN_PORT, SEG7_PATTERN_8, ~SEG7_PATTERN_LIST[num]);
 }

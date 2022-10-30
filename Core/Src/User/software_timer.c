@@ -5,7 +5,7 @@
  *      Author: ntpt
  */
 
-#include "software_timer.h"
+#include "User/software_timer.h"
 
 // since timer will be update every tick duration, it can only register
 // event with the smallest time scale of tick duration (in this case TIMER_TICK_DURATION_MS)

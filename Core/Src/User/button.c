@@ -5,7 +5,7 @@
  *      Author: ntpt
  */
 
-#include "button.h"
+#include "User/button.h"
 
 void button_poll_and_update_state(Button_t *bt)
 {

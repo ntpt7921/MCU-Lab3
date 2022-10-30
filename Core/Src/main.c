@@ -21,8 +21,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "button.h"
-#include "software_timer.h"
+#include "User/button.h"
+#include "User/software_timer.h"
+#include "User/led_7seg.h"
+#include "User/traffic_light_3color.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,10 +57,40 @@ Button_t button1 =
 	.current_state = BUTTON_IS_RELEASED,
 };
 
-Software_timer_t timer_update_led =
+Software_timer_t timer_update_7seg =
 {
 	.timer_counter = 0,
 	.timer_flag = TIMER_FLAG_RESET,
+};
+
+Software_timer_t timer_traffic_light =
+{
+	.timer_counter = 0,
+	.timer_flag = TIMER_FLAG_RESET,
+};
+
+Two_digit_7seg_t two_digit_7seg =
+{
+	.CONTROL_PIN = { CONTROL_7SEG_0_Pin, CONTROL_7SEG_1_Pin },
+	.CONTROL_PORT = { CONTROL_7SEG_0_GPIO_Port, CONTROL_7SEG_1_GPIO_Port },
+
+	.digit_value = { 9 , 6 },
+};
+
+Traffic_light_t traffic_light =
+{
+	.TRAFFIC_LIGHT_PIN =
+	{
+		TRAFFIC_LIGHT_RED_Pin,
+		TRAFFIC_LIGHT_YELLOW_Pin,
+		TRAFFIC_LIGHT_GREEN_Pin
+	},
+	.TRAFFIC_LIGHT_PORT =
+	{
+		TRAFFIC_LIGHT_RED_GPIO_Port,
+		TRAFFIC_LIGHT_YELLOW_GPIO_Port,
+		TRAFFIC_LIGHT_GREEN_GPIO_Port
+	},
 };
 /* USER CODE END PV */
 
@@ -111,33 +143,45 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-	const int update_led_period_ms = 100;
+	const int update_7seg_period_ms = 200;
+	const int each_traffic_light_color_period_ms = 1000;
 
 	uint8_t count_value = 0;
+	uint8_t current_7seg_digit = 0;
+	Traffic_light_color_t color = TRAFFIC_LIGHT_COLOR_RED;
 
-	software_timer_set_duration_ms(&timer_update_led, update_led_period_ms);
+	software_timer_set_duration_ms(&timer_update_7seg, update_7seg_period_ms);
+	software_timer_set_duration_ms(&timer_traffic_light, each_traffic_light_color_period_ms);
 
 	while (1)
 	{
-		if (software_timer_is_set(&timer_update_led))
+		if (software_timer_is_set(&timer_update_7seg))
 		{
-			software_timer_set_duration_ms(&timer_update_led, update_led_period_ms);
+			software_timer_set_duration_ms(&timer_update_7seg, update_7seg_period_ms);
 
-			uint16_t set_pattern = (uint16_t) (~count_value) & 0x00FF;
-			uint16_t reset_pattern = (uint16_t) (count_value) & 0x00FF;
-			uint32_t set_reset_pattern = (uint32_t) reset_pattern << 16u | (uint32_t) set_pattern;
-			COUNT0_GPIO_Port->BSRR = set_reset_pattern;
+			two_digit_7seg_display_digit(&two_digit_7seg, current_7seg_digit);
+			current_7seg_digit = (current_7seg_digit == 0) ? 1 : 0;
+		}
+
+		if (software_timer_is_set(&timer_traffic_light))
+		{
+			software_timer_set_duration_ms(&timer_traffic_light, each_traffic_light_color_period_ms);
+			color = (color + 1) % TRAFFIC_LIGHT_COLOR_NUMBER;
+
+			traffic_light_turn_on_one_color(&traffic_light, color);
 		}
 
 		if (button_is_pressed_activated(&button1))
 		{
 			count_value++;
+			two_digit_7seg_update_value(&two_digit_7seg, count_value);
 			button_clear_activation(&button1);
 		}
 
 		if (button_is_hold_activated(&button1))
 		{
 			count_value++;
+			two_digit_7seg_update_value(&two_digit_7seg, count_value);
 			button_clear_activation(&button1);
 		}
     /* USER CODE END WHILE */
@@ -242,13 +286,16 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, COUNT0_Pin|COUNT1_Pin|COUNT2_Pin|CONNT3_Pin
-                          |COUNT4_Pin|COUNT5_Pin|COUNT6_Pin|COUNT7_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, SEG0_Pin|SEG1_Pin|SEG2_Pin|SEG3_Pin
+                          |SEG4_Pin|SEG5_Pin|SEG6_Pin|CONTROL_7SEG_0_Pin
+                          |CONTROL_7SEG_1_Pin|TRAFFIC_LIGHT_RED_Pin|TRAFFIC_LIGHT_YELLOW_Pin|TRAFFIC_LIGHT_GREEN_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : COUNT0_Pin COUNT1_Pin COUNT2_Pin CONNT3_Pin
-                           COUNT4_Pin COUNT5_Pin COUNT6_Pin COUNT7_Pin */
-  GPIO_InitStruct.Pin = COUNT0_Pin|COUNT1_Pin|COUNT2_Pin|CONNT3_Pin
-                          |COUNT4_Pin|COUNT5_Pin|COUNT6_Pin|COUNT7_Pin;
+  /*Configure GPIO pins : SEG0_Pin SEG1_Pin SEG2_Pin SEG3_Pin
+                           SEG4_Pin SEG5_Pin SEG6_Pin CONTROL_7SEG_0_Pin
+                           CONTROL_7SEG_1_Pin TRAFFIC_LIGHT_RED_Pin TRAFFIC_LIGHT_YELLOW_Pin TRAFFIC_LIGHT_GREEN_Pin */
+  GPIO_InitStruct.Pin = SEG0_Pin|SEG1_Pin|SEG2_Pin|SEG3_Pin
+                          |SEG4_Pin|SEG5_Pin|SEG6_Pin|CONTROL_7SEG_0_Pin
+                          |CONTROL_7SEG_1_Pin|TRAFFIC_LIGHT_RED_Pin|TRAFFIC_LIGHT_YELLOW_Pin|TRAFFIC_LIGHT_GREEN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -268,7 +315,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	// this function run every 10ms due to timer 2 update
 	if (htim->Instance == TIM2)
 	{
-		software_timer_update_after_tick(&timer_update_led);
+		software_timer_update_after_tick(&timer_update_7seg);
+		software_timer_update_after_tick(&timer_traffic_light);
 		button_poll_and_update_state(&button1);
 	}
 }
