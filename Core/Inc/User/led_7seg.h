@@ -27,9 +27,8 @@ extern const uint16_t SEG7_PATTERN_7;
 extern const uint16_t SEG7_PATTERN_8;
 extern const uint16_t SEG7_PATTERN_9;
 // assume all seg pattern line is in the same port
-extern GPIO_TypeDef * const COMMON_SEG7_PATTERN_PORT;
+extern GPIO_TypeDef *const COMMON_SEG7_PATTERN_PORT;
 extern const uint16_t SEG7_PATTERN_LIST[10];
-
 
 /**
  * NOTE:
@@ -39,17 +38,16 @@ extern const uint16_t SEG7_PATTERN_LIST[10];
  */
 typedef struct
 {
-    const uint16_t CONTROL_PIN[2];
-    GPIO_TypeDef * const CONTROL_PORT[2];
+	const uint16_t CONTROL_PIN[2];
+	GPIO_TypeDef *const CONTROL_PORT[2];
 
-    uint8_t digit_value[2];
+	uint8_t digit_value[2];
 } Two_digit_7seg_t;
 
-
-void two_digit_7seg_update_digit_value(Two_digit_7seg_t *display, uint8_t digit, uint8_t value);
+void two_digit_7seg_update_digit_value(Two_digit_7seg_t *display, uint8_t digit,
+		uint8_t value);
 void two_digit_7seg_update_value(Two_digit_7seg_t *display, uint8_t value);
 void two_digit_7seg_display_digit(Two_digit_7seg_t *display, uint8_t digit);
 void led_7seg_change_pattern(uint8_t num);
-
 
 #endif /* INC_LED_7SEG_H_ */

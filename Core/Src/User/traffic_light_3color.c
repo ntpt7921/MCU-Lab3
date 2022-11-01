@@ -7,24 +7,29 @@
 
 #include "User/traffic_light_3color.h"
 
-
-void traffic_light_change_color(Traffic_light_t *tl, Traffic_light_color_t color, Traffic_light_color_state_t state)
+void traffic_light_change_color(Traffic_light_t *tl,
+		Traffic_light_color_t color, Traffic_light_color_state_t state)
 {
-    HAL_GPIO_WritePin(tl->TRAFFIC_LIGHT_PORT[color], tl->TRAFFIC_LIGHT_PIN[color], state);
-    tl->current_state[color] = state;
+	HAL_GPIO_WritePin(tl->TRAFFIC_LIGHT_PORT[color],
+			tl->TRAFFIC_LIGHT_PIN[color], state);
+	tl->current_state[color] = state;
 }
 
-void traffic_light_toggle_color(Traffic_light_t *tl, Traffic_light_color_t color)
+void traffic_light_toggle_color(Traffic_light_t *tl,
+		Traffic_light_color_t color)
 {
-    HAL_GPIO_TogglePin(tl->TRAFFIC_LIGHT_PORT[color], tl->TRAFFIC_LIGHT_PIN[color]);
+	HAL_GPIO_TogglePin(tl->TRAFFIC_LIGHT_PORT[color],
+			tl->TRAFFIC_LIGHT_PIN[color]);
 
-    // invert the current_state of the color
-    tl->current_state[color] = (tl->current_state[color] == TRAFFIC_LIGHT_COLOR_OFF_STATE) ?
-    		TRAFFIC_LIGHT_COLOR_ON_STATE : TRAFFIC_LIGHT_COLOR_OFF_STATE;
+	// invert the current_state of the color
+	tl->current_state[color] =
+			(tl->current_state[color] == TRAFFIC_LIGHT_COLOR_OFF_STATE) ?
+					TRAFFIC_LIGHT_COLOR_ON_STATE :
+					TRAFFIC_LIGHT_COLOR_OFF_STATE;
 }
 
-
-void traffic_light_turn_on_one_color(Traffic_light_t *tl, Traffic_light_color_t color)
+void traffic_light_turn_on_one_color(Traffic_light_t *tl,
+		Traffic_light_color_t color)
 {
 	// turn off all color
 	for (Traffic_light_color_t i = 0; i < TRAFFIC_LIGHT_COLOR_NUMBER; i++)
@@ -34,4 +39,25 @@ void traffic_light_turn_on_one_color(Traffic_light_t *tl, Traffic_light_color_t 
 
 	// turn on only one color afterward
 	traffic_light_change_color(tl, color, TRAFFIC_LIGHT_COLOR_ON_STATE);
+}
+
+Traffic_light_color_t traffic_light_next_color_from_current(
+		Traffic_light_color_t current_color)
+{
+	switch (current_color)
+	{
+	case TRAFFIC_LIGHT_COLOR_RED:
+		return TRAFFIC_LIGHT_COLOR_YELLOW;
+		break;
+	case TRAFFIC_LIGHT_COLOR_YELLOW:
+		return TRAFFIC_LIGHT_COLOR_GREEN;
+		break;
+	case TRAFFIC_LIGHT_COLOR_GREEN:
+		return TRAFFIC_LIGHT_COLOR_RED;
+		break;
+
+	default:
+		return TRAFFIC_LIGHT_COLOR_RED;
+		break;
+	}
 }

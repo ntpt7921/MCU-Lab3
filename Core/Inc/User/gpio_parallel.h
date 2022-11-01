@@ -21,7 +21,7 @@
 
 // output for each pin will be the associated bit in the value parameter
 // all pin with bit 0 in mask will not be affected
-void gpio_parallel_write(GPIO_TypeDef * const port, uint16_t mask, uint16_t value);
-
+void gpio_parallel_write(GPIO_TypeDef *const port, uint16_t mask,
+		uint16_t value);
 
 #endif /* INC_USER_GPIO_PARALLEL_H_ */

@@ -12,10 +12,10 @@
 
 typedef enum
 {
-    TRAFFIC_LIGHT_COLOR_RED = 0,
-    TRAFFIC_LIGHT_COLOR_YELLOW = 1,
-    TRAFFIC_LIGHT_COLOR_GREEN = 2,
-    TRAFFIC_LIGHT_COLOR_NUMBER,
+	TRAFFIC_LIGHT_COLOR_RED = 0,
+	TRAFFIC_LIGHT_COLOR_YELLOW = 1,
+	TRAFFIC_LIGHT_COLOR_GREEN = 2,
+	TRAFFIC_LIGHT_COLOR_NUMBER,
 } Traffic_light_color_t;
 
 typedef enum
@@ -31,19 +31,23 @@ typedef enum
  */
 typedef struct
 {
-    const uint16_t TRAFFIC_LIGHT_PIN[TRAFFIC_LIGHT_COLOR_NUMBER];
-    GPIO_TypeDef * const TRAFFIC_LIGHT_PORT[TRAFFIC_LIGHT_COLOR_NUMBER];
+	const uint16_t TRAFFIC_LIGHT_PIN[TRAFFIC_LIGHT_COLOR_NUMBER];
+	GPIO_TypeDef *const TRAFFIC_LIGHT_PORT[TRAFFIC_LIGHT_COLOR_NUMBER];
 
-    Traffic_light_color_state_t current_state[TRAFFIC_LIGHT_COLOR_NUMBER];
+	Traffic_light_color_state_t current_state[TRAFFIC_LIGHT_COLOR_NUMBER];
 } Traffic_light_t;
 
-
-
 // change state of individual color
-void traffic_light_change_color(Traffic_light_t *tl, Traffic_light_color_t color, Traffic_light_color_state_t state);
+void traffic_light_change_color(Traffic_light_t *tl,
+		Traffic_light_color_t color, Traffic_light_color_state_t state);
 // toggle state of individual color
-void traffic_light_toggle_color(Traffic_light_t *tl, Traffic_light_color_t color);
+void traffic_light_toggle_color(Traffic_light_t *tl,
+		Traffic_light_color_t color);
 // turn on only one color
-void traffic_light_turn_on_one_color(Traffic_light_t *tl, Traffic_light_color_t color);
+void traffic_light_turn_on_one_color(Traffic_light_t *tl,
+		Traffic_light_color_t color);
+// get next color from current color
+Traffic_light_color_t traffic_light_next_color_from_current(
+		Traffic_light_color_t current_color);
 
 #endif /* INC_TRAFFIC_LIGHT_3COLOR_H_ */

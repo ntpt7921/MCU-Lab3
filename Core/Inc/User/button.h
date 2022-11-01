@@ -22,11 +22,8 @@
  */
 typedef enum
 {
-    BUTTON_IS_RELEASED,
-    BUTTON_IS_PRESSED,
-    BUTTON_IS_HOLD
+	BUTTON_IS_RELEASED, BUTTON_IS_PRESSED, BUTTON_IS_HOLD
 } Button_state_t;
-
 
 /**
  * NOTE:
@@ -48,30 +45,29 @@ typedef GPIO_PinState Button_read_value_t;
  */
 typedef struct
 {
-    // variable for configuration of the button
-    const uint8_t FILTER_DELAY_COUNT_MAX;
-    const uint16_t HOLD_STATE_DELAY_COUNT_MAX;
-    const uint16_t HOLD_STATE_ACTIVATE_COUNT_MAX;
-    const Button_read_value_t READING_WHEN_PRESSED;
-    const uint16_t PIN;
-    GPIO_TypeDef * const PORT; // const pointer to GPIO_TypeDef
+	// variable for configuration of the button
+	const uint8_t FILTER_DELAY_COUNT_MAX;
+	const uint16_t HOLD_STATE_DELAY_COUNT_MAX;
+	const uint16_t HOLD_STATE_ACTIVATE_COUNT_MAX;
+	const Button_read_value_t READING_WHEN_PRESSED;
+	const uint16_t PIN;
+	GPIO_TypeDef *const PORT; // const pointer to GPIO_TypeDef
 
+	Button_state_t current_state;
 
-    Button_state_t current_state;
-
-    // variables for internal state of button
-    Button_read_value_t last_reading;
-    uint8_t filter_delay_count;
-    uint16_t hold_state_delay_count;
-    uint16_t hold_state_activate_count;
-    uint8_t activate_flag;
+	// variables for internal state of button
+	Button_read_value_t last_reading;
+	uint8_t filter_delay_count;
+	uint16_t hold_state_delay_count;
+	uint16_t hold_state_activate_count;
+	uint8_t activate_flag;
 } Button_t;
 
-void button_poll_and_update_state(Button_t *bt);
-uint8_t button_is_pressed(Button_t *bt);
-uint8_t button_is_hold(Button_t *bt);
-uint8_t button_is_pressed_activated(Button_t *bt);
-uint8_t button_is_hold_activated(Button_t *bt);
-void button_clear_activation(Button_t *bt);
+void button_poll_and_update_state(volatile Button_t *bt);
+uint8_t button_is_pressed(volatile Button_t *bt);
+uint8_t button_is_hold(volatile Button_t *bt);
+uint8_t button_is_pressed_activated(volatile Button_t *bt);
+uint8_t button_is_hold_activated(volatile Button_t *bt);
+void button_clear_activation(volatile Button_t *bt);
 
 #endif /* INC_BUTTON_H_ */
