@@ -8,7 +8,7 @@
 #include "User/global_object.h"
 
 const uint32_t TRAFFIC_LIGHT_BLINK_PERIOD_MS = 500;
-const uint32_t SEG7_UPDATE_PERIOD_MS = 500;
+const uint32_t SEG7_UPDATE_PERIOD_MS = 100;
 
 volatile Software_timer_t timer_update_7seg =
 { 0, TIMER_FLAG_RESET, };
@@ -17,7 +17,7 @@ volatile Software_timer_t timer_traffic_light =
 
 volatile Button_t button_mode_select =
 {
-	.FILTER_DELAY_COUNT_MAX = 5,
+	.FILTER_DELAY_COUNT_MAX = 3,
 	.HOLD_STATE_DELAY_COUNT_MAX = 100,
 	.HOLD_STATE_ACTIVATE_COUNT_MAX = 50,
 	.READING_WHEN_PRESSED = GPIO_PIN_RESET,
@@ -26,7 +26,7 @@ volatile Button_t button_mode_select =
 };
 volatile Button_t button_mode_set =
 {
-	.FILTER_DELAY_COUNT_MAX = 5,
+	.FILTER_DELAY_COUNT_MAX = 3,
 	.HOLD_STATE_DELAY_COUNT_MAX = 100,
 	.HOLD_STATE_ACTIVATE_COUNT_MAX = 50,
 	.READING_WHEN_PRESSED = GPIO_PIN_RESET,
@@ -35,7 +35,7 @@ volatile Button_t button_mode_set =
 };
 volatile Button_t button_time_change =
 {
-	.FILTER_DELAY_COUNT_MAX = 5,
+	.FILTER_DELAY_COUNT_MAX = 3,
 	.HOLD_STATE_DELAY_COUNT_MAX = 100,
 	.HOLD_STATE_ACTIVATE_COUNT_MAX = 50,
 	.READING_WHEN_PRESSED = GPIO_PIN_RESET,
@@ -68,17 +68,16 @@ Traffic_light_t traffic_light_1 =
 	.TRAFFIC_LIGHT_PORT =
 	{ TRAFFIC_LIGHT_1_RED_GPIO_Port, TRAFFIC_LIGHT_1_YELLOW_GPIO_Port, TRAFFIC_LIGHT_1_GREEN_GPIO_Port },
 };
-uint8_t traffic_light_0_current_digit = 0;
-uint8_t traffic_light_1_current_digit = 0;
+uint8_t traffic_light_7seg_current = 0;
 
 FSM_t fsm_traffic_light_system =
 { .current_state = STATE_RESET, };
 
 uint8_t traffic_light_duration[TRAFFIC_LIGHT_COLOR_NUMBER] =
 {
-	10, // red
-	10, // yellow
-	10, // green
+	2, // red
+	2, // yellow
+	2, // green
 };
 
 Traffic_light_color_t traffic_light_0_current_color = TRAFFIC_LIGHT_COLOR_RED;

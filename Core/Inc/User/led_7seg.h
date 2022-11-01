@@ -47,6 +47,7 @@ typedef struct
 void two_digit_7seg_update_digit_value(Two_digit_7seg_t *display, uint8_t digit,
 		uint8_t value);
 void two_digit_7seg_update_value(Two_digit_7seg_t *display, uint8_t value);
+void two_digit_7seg_turn_off_all_digit(Two_digit_7seg_t *display);
 void two_digit_7seg_display_digit(Two_digit_7seg_t *display, uint8_t digit);
 void led_7seg_change_pattern(uint8_t num);
 

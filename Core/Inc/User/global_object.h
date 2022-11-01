@@ -34,8 +34,7 @@ extern Traffic_light_t traffic_light_0;
 extern Traffic_light_t traffic_light_1;
 
 // From here onward is the internal traffic light system variable and state machine
-extern uint8_t traffic_light_0_current_digit;
-extern uint8_t traffic_light_1_current_digit;
+extern uint8_t traffic_light_7seg_current;
 
 extern FSM_t fsm_traffic_light_system;
 

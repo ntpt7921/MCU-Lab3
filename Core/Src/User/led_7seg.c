@@ -50,6 +50,15 @@ void two_digit_7seg_update_value(Two_digit_7seg_t *display, uint8_t value)
 	two_digit_7seg_update_digit_value(display, 1, value / 10);
 }
 
+void two_digit_7seg_turn_off_all_digit(Two_digit_7seg_t *display)
+{
+	for (uint8_t i = 0; i < 2; i++)
+	{
+		HAL_GPIO_WritePin(display->CONTROL_PORT[i], display->CONTROL_PIN[i],
+				GPIO_PIN_SET);
+	}
+}
+
 void two_digit_7seg_display_digit(Two_digit_7seg_t *display, uint8_t digit)
 {
 	// we assume digit can only be 0 or 1
@@ -58,12 +67,12 @@ void two_digit_7seg_display_digit(Two_digit_7seg_t *display, uint8_t digit)
 	GPIO_TypeDef *other_7seg_control_port = display->CONTROL_PORT[other_digit];
 
 	// disable the other digit control line
-	HAL_GPIO_WritePin(other_7seg_control_port, other_7seg_control_pin, SET);
+	HAL_GPIO_WritePin(other_7seg_control_port, other_7seg_control_pin, GPIO_PIN_SET);
 
 	// set new pattern and enable digit control line
 	led_7seg_change_pattern(display->digit_value[digit]);
 	HAL_GPIO_WritePin(display->CONTROL_PORT[digit], display->CONTROL_PIN[digit],
-			RESET);
+			GPIO_PIN_RESET);
 }
 
 void led_7seg_change_pattern(uint8_t num)

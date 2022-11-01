@@ -18,6 +18,7 @@ FSM_state_t FSM_traffic_light_get_next_state(FSM_state_t current_state)
 		if (button_is_hold_activated(&button_mode_select)
 				|| button_is_pressed_activated(&button_mode_select))
 		{
+			button_clear_activation(&button_mode_select);
 			next_state = STATE_UPDATE_RED;
 		}
 		break;
@@ -25,11 +26,13 @@ FSM_state_t FSM_traffic_light_get_next_state(FSM_state_t current_state)
 		if (button_is_hold_activated(&button_mode_select)
 				|| button_is_pressed_activated(&button_mode_select))
 		{
+			button_clear_activation(&button_mode_select);
 			next_state = STATE_UPDATE_YELLOW;
 		}
 		else if (button_is_hold_activated(&button_mode_set)
 				|| button_is_pressed_activated(&button_mode_set))
 		{
+			button_clear_activation(&button_mode_set);
 			next_state = STATE_NORMAL;
 		}
 		break;
@@ -37,11 +40,13 @@ FSM_state_t FSM_traffic_light_get_next_state(FSM_state_t current_state)
 		if (button_is_hold_activated(&button_mode_select)
 				|| button_is_pressed_activated(&button_mode_select))
 		{
+			button_clear_activation(&button_mode_select);
 			next_state = STATE_UPDATE_GREEN;
 		}
 		else if (button_is_hold_activated(&button_mode_set)
 				|| button_is_pressed_activated(&button_mode_set))
 		{
+			button_clear_activation(&button_mode_set);
 			next_state = STATE_NORMAL;
 		}
 		break;
@@ -49,11 +54,13 @@ FSM_state_t FSM_traffic_light_get_next_state(FSM_state_t current_state)
 		if (button_is_hold_activated(&button_mode_select)
 				|| button_is_pressed_activated(&button_mode_select))
 		{
+			button_clear_activation(&button_mode_select);
 			next_state = STATE_NORMAL;
 		}
 		else if (button_is_hold_activated(&button_mode_set)
 				|| button_is_pressed_activated(&button_mode_set))
 		{
+			button_clear_activation(&button_mode_set);
 			next_state = STATE_NORMAL;
 		}
 		break;
@@ -94,13 +101,9 @@ void FSM_traffic_light_set_to_next_state(FSM_t *fsm, FSM_state_t next_state)
 				traffic_light_0_time_left);
 		two_digit_7seg_update_value(&two_digit_7seg_1,
 				traffic_light_1_time_left);
-		traffic_light_0_current_digit = 0;
-		traffic_light_1_current_digit = 0;
+		traffic_light_7seg_current = 0;
 
-		two_digit_7seg_display_digit(&two_digit_7seg_0,
-				traffic_light_0_current_digit);
-		two_digit_7seg_display_digit(&two_digit_7seg_1,
-				traffic_light_1_current_digit);
+		update_7seg();
 
 		software_timer_set_duration_ms(&timer_traffic_light, 1000);
 		software_timer_set_duration_ms(&timer_update_7seg,
@@ -251,6 +254,8 @@ void perform_update_state_funtionality(Traffic_light_color_t current_color)
 	if (button_is_pressed_activated(&button_time_change)
 			|| button_is_hold_activated(&button_time_change))
 	{
+		button_clear_activation(&button_time_change);
+
 		traffic_light_duration[current_color]++;
 		if (traffic_light_duration[current_color] > 99)
 		{
@@ -264,12 +269,25 @@ void perform_update_state_funtionality(Traffic_light_color_t current_color)
 
 void update_7seg()
 {
-	traffic_light_0_current_digit =
-			(traffic_light_0_current_digit == 0) ? 1 : 0;
-	traffic_light_1_current_digit =
-			(traffic_light_1_current_digit == 1) ? 1 : 0;
-	two_digit_7seg_display_digit(&two_digit_7seg_0,
-			traffic_light_0_current_digit);
-	two_digit_7seg_display_digit(&two_digit_7seg_1,
-			traffic_light_1_current_digit);
+	uint8_t traffic_light_number = traffic_light_7seg_current / 2;
+	uint8_t digit_number = traffic_light_7seg_current % 2;
+
+	if (traffic_light_number == 0)
+	{
+		if (digit_number == 0)
+		{
+			two_digit_7seg_turn_off_all_digit(&two_digit_7seg_1);
+		}
+		two_digit_7seg_display_digit(&two_digit_7seg_0, digit_number);
+	}
+	else
+	{
+		if (digit_number == 0)
+		{
+			two_digit_7seg_turn_off_all_digit(&two_digit_7seg_0);
+		}
+		two_digit_7seg_display_digit(&two_digit_7seg_1, digit_number);
+	}
+
+	traffic_light_7seg_current = (traffic_light_7seg_current + 1) % 4;
 }
