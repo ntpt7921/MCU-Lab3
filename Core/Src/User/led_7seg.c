@@ -67,7 +67,8 @@ void two_digit_7seg_display_digit(Two_digit_7seg_t *display, uint8_t digit)
 	GPIO_TypeDef *other_7seg_control_port = display->CONTROL_PORT[other_digit];
 
 	// disable the other digit control line
-	HAL_GPIO_WritePin(other_7seg_control_port, other_7seg_control_pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(other_7seg_control_port, other_7seg_control_pin,
+			GPIO_PIN_SET);
 
 	// set new pattern and enable digit control line
 	led_7seg_change_pattern(display->digit_value[digit]);

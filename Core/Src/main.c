@@ -91,8 +91,8 @@ int main(void)
 	HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
 
 	while (1)
 	{
@@ -102,11 +102,11 @@ int main(void)
 				FSM_traffic_light_set_to_next_state);
 		FSM_do_action_within_state(&fsm_traffic_light_system,
 				FSM_traffic_light_do_action_within_state);
-    /* USER CODE END WHILE */
+		/* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+		/* USER CODE BEGIN 3 */
 	}
-  /* USER CODE END 3 */
+	/* USER CODE END 3 */
 }
 
 /**

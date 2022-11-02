@@ -32,6 +32,14 @@ typedef void (*FSM_set_next_state_function_t)(FSM_t *fsm,
 		FSM_state_t next_state);
 typedef void (*FSM_do_action_within_state_function_t)(FSM_t *fsm);
 
+/**
+ * NOTE:
+ * These 3 function represent the changing of state of the FSM
+ *   - FSM_get_next_state will get the next state from the current state
+ *   - FSM_set_to_next_state will do the necessary action on state change
+ *   - FSM_do_action_within_state will perform what a specific state entails
+ */
+
 FSM_state_t FSM_get_next_state(FSM_t *fsm, FSM_get_next_state_function_t fp);
 void FSM_set_to_next_state(FSM_t *fsm, FSM_state_t next_state,
 		FSM_set_next_state_function_t fp);
